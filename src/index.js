@@ -3,6 +3,7 @@ import Notiflix from 'notiflix';
 
 const DEBOUNCE_DELAY = 300;
 const API_KEY = '31276153-bbebebed3806edcc66ad5b8b4';
+let page = 1;
 
 const refs = {
   searchForm: document.querySelector('.search-form'),
@@ -23,7 +24,7 @@ function onSearch(evt) {
   //     },
   //   };
 
-  const url = `https://pixabay.com/api/?key=${API_KEY}&q="${searchQuery}"&image_type=photo&orientation=horizontal&safesearch=true?fields=webformatURL,largeImageURL,tags,likes,views,comments,downloads`;
+  const url = `https://pixabay.com/api/?key=${API_KEY}&q="${searchQuery}"&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=40`;
 
   fetch(url)
     .then(response => response.json())
@@ -32,7 +33,7 @@ function onSearch(evt) {
         .map(
           item =>
             `<div class="photo-card">
-            <img src="${item.webformatURL}" alt="" loading="lazy" />
+            <img src="${item.webformatURL}" alt="" loading="lazy" width=100% />
             <div class="info">
                 <p class="info-item">
                 <b>Likes ${item.likes}</b>
@@ -57,4 +58,8 @@ function onSearch(evt) {
       }
       refs.gallery.insertAdjacentHTML('beforeend', markUp);
     });
+}
+
+function nextPage() {
+  page += 1;
 }
