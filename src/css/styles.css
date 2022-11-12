@@ -43,9 +43,10 @@ input {
 
 .info {
   display: flex;
-  justify-content: center;
+  text-align: center;
 }
 
 .info-item {
-  margin-right: 5px;
+  display: flex;
+  justify-content: center;
 }
