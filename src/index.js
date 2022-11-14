@@ -7,6 +7,8 @@ let page = 1;
 let per_page = 40;
 let markUp;
 let searchQuery;
+let totalHits;
+let currentHits;
 
 const refs = {
   searchForm: document.querySelector('.search-form'),
@@ -22,7 +24,7 @@ refs.button.disabled = true;
 
 function onSearch(evt) {
   evt.preventDefault();
-
+  page = 1;
   searchQuery = refs.input.value;
 
   const url = `https://pixabay.com/api/?key=${API_KEY}&q="${searchQuery}"&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=40`;
@@ -57,36 +59,26 @@ function onSearch(evt) {
 
       refs.gallery.innerHTML = markUp;
       refs.button.disabled = false;
-
-      let totalHits = data.totalHits;
-      let currentHits = page * per_page;
-      console.log(currentHits);
+      totalHits = data.totalHits;
 
       if (markUp == '') {
         Notiflix.Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.'
         );
       } else Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
-
-      if (totalHits < currentHits) {
-        refs.button.disabled = true;
-        Notiflix.Notify.failure(
-          "We're sorry, but you've reached the end of search results."
-        );
-      }
     });
 }
 
-// window.addEventListener('scroll', () => {
-//   const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
+window.addEventListener('scroll', () => {
+  const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
 
-//   if (scrollTop === scrollHeight - clientHeight) {
-//     console.log('загрузил страницу');
+  if (scrollTop === scrollHeight - clientHeight) {
+    console.log('загрузил страницу');
 
-//     console.log(page);
-//     onSearch();
-//   }
-// });
+    console.log(page);
+    onLoad();
+  }
+});
 
 function onLoad() {
   searchQuery = refs.input.value;
@@ -97,6 +89,37 @@ function onLoad() {
   fetch(url)
     .then(response => response.json())
     .then(data => {
+      markUp = data.hits
+        .map(
+          item =>
+            `<div class="photo-card">
+            <img src="${item.webformatURL}" alt="" loading="lazy" width=100% />
+            <div class="info">
+                <p class="info-item">
+                <b>Likes ${item.likes}</b>
+                </p>
+                <p class="info-item">
+                <b>Views ${item.views}</b>
+                </p>
+                <p class="info-item">
+                <b>Comments ${item.comments}</b>
+                </p>
+                <p class="info-item">
+                <b>Downloads ${item.downloads}</b>
+                </p>
+            </div>
+            </div>`
+        )
+        .join('');
       refs.gallery.insertAdjacentHTML('beforeend', markUp);
+      totalHits = data.totalHits;
+      currentHits = page * per_page;
+
+      if (totalHits < currentHits) {
+        refs.button.disabled = true;
+        Notiflix.Notify.failure(
+          "We're sorry, but you've reached the end of search results."
+        );
+      }
     });
 }
