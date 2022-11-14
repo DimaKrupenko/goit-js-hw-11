@@ -5,6 +5,8 @@ const DEBOUNCE_DELAY = 300;
 const API_KEY = '31276153-bbebebed3806edcc66ad5b8b4';
 let page = 1;
 let per_page = 40;
+let markUp;
+let searchQuery;
 
 const refs = {
   searchForm: document.querySelector('.search-form'),
@@ -14,21 +16,23 @@ const refs = {
 };
 
 refs.searchForm.addEventListener('submit', onSearch);
-refs.button.addEventListener('click', onSearch);
+refs.button.addEventListener('click', onLoad);
 
 refs.button.disabled = true;
 
 function onSearch(evt) {
   evt.preventDefault();
 
-  const searchQuery = refs.input.value;
+  searchQuery = refs.input.value;
 
   const url = `https://pixabay.com/api/?key=${API_KEY}&q="${searchQuery}"&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=40`;
 
   fetch(url)
     .then(response => response.json())
     .then(data => {
-      const markUp = data.hits
+      refs.gallery.innerHTML = '';
+
+      markUp = data.hits
         .map(
           item =>
             `<div class="photo-card">
@@ -51,29 +55,24 @@ function onSearch(evt) {
         )
         .join('');
 
-      if (markUp == '') {
-        Notiflix.Notify.failure(
-          'Sorry, there are no images matching your search query. Please try again.'
-        );
-      }
-      refs.gallery.insertAdjacentHTML('beforeend', markUp);
+      refs.gallery.innerHTML = markUp;
       refs.button.disabled = false;
-      page += 1;
 
       let totalHits = data.totalHits;
       let currentHits = page * per_page;
       console.log(currentHits);
-      Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
+
+      if (markUp == '') {
+        Notiflix.Notify.failure(
+          'Sorry, there are no images matching your search query. Please try again.'
+        );
+      } else Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
 
       if (totalHits < currentHits) {
         refs.button.disabled = true;
         Notiflix.Notify.failure(
           "We're sorry, but you've reached the end of search results."
         );
-
-        // if (searchQuery == '') {
-        //   refs.gallery.innerHTML = '';
-        // }
       }
     });
 }
@@ -88,3 +87,16 @@ function onSearch(evt) {
 //     onSearch();
 //   }
 // });
+
+function onLoad() {
+  searchQuery = refs.input.value;
+  page += 1;
+
+  const url = `https://pixabay.com/api/?key=${API_KEY}&q="${searchQuery}"&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=40`;
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      refs.gallery.insertAdjacentHTML('beforeend', markUp);
+    });
+}
