@@ -102,7 +102,7 @@ function onSearch(evt) {
         Notiflix.Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.'
         );
-        refs.gallery.innerHTML = '';
+        refs.gallery.innerHTML = 'Леха жирный лох';
       }
       openModal();
     } catch (error) {
