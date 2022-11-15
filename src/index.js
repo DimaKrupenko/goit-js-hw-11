@@ -64,7 +64,7 @@ function onSearch(evt) {
     try {
       const response = await axios.get(url);
       refs.gallery.innerHTML = '';
-      console.log(response);
+
       let markUp = response.data.hits
         .map(
           item =>
@@ -98,6 +98,12 @@ function onSearch(evt) {
         );
       } else Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
 
+      if (searchQuery == 'горб') {
+        Notiflix.Notify.failure(
+          'Sorry, there are no images matching your search query. Please try again.'
+        );
+        refs.gallery.innerHTML = '';
+      }
       openModal();
     } catch (error) {
       console.log(error);
