@@ -98,12 +98,6 @@ function onSearch(evt) {
         );
       } else Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
 
-      if (searchQuery == 'горб') {
-        Notiflix.Notify.failure(
-          'Sorry, there are no images matching your search query. Please try again.'
-        );
-        refs.gallery.innerHTML = 'Леха жирный лох';
-      }
       openModal();
     } catch (error) {
       console.log(error);
