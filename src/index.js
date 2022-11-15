@@ -30,7 +30,7 @@ function onSearch(evt) {
   page = 1;
   searchQuery = refs.input.value;
 
-  const url = `http://pixabay.com/api/?key=${API_KEY}&q="${searchQuery}"&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=40`;
+  const url = `https://pixabay.com/api/?key=${API_KEY}&q="${searchQuery}"&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=40`;
 
   // fetch(url)
   //   .then(response => response.json())
@@ -64,7 +64,7 @@ function onSearch(evt) {
     try {
       const response = await axios.get(url);
       refs.gallery.innerHTML = '';
-
+      console.log(response);
       let markUp = response.data.hits
         .map(
           item =>
@@ -91,8 +91,14 @@ function onSearch(evt) {
       refs.gallery.innerHTML = markUp;
       refs.button.disabled = false;
       totalHits = response.data.totalHits;
+
+      if (markUp == '') {
+        Notiflix.Notify.failure(
+          'Sorry, there are no images matching your search query. Please try again.'
+        );
+      } else Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
+
       openModal();
-      notificationOpens();
     } catch (error) {
       console.log(error);
     }
@@ -187,14 +193,6 @@ function onLoad() {
 function openModal() {
   // evt.preventDefault();
   const gallery = new SimpleLightbox('.gallery a');
-}
-
-function notificationOpens() {
-  if (markUp == '') {
-    Notiflix.Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
-  } else Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
 }
 
 function endSearch() {
