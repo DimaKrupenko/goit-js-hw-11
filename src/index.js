@@ -165,6 +165,7 @@ function onLoad() {
         .map(
           item =>
             `<div class="photo-card">
+            <a class="gallery__link" href=${item.webformatURL} onclick="return false;">
             <img src="${item.webformatURL}" alt="" loading="lazy" width=100% />
             <div class="info">
                 <p class="info-item">
@@ -184,6 +185,7 @@ function onLoad() {
         )
         .join('');
       refs.gallery.insertAdjacentHTML('beforeend', markUp);
+      openModal();
       totalHits = data.totalHits;
       currentHits = page * per_page;
       endSearch();
